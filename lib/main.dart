@@ -30,6 +30,7 @@ class KullaniciAdiEkrani extends StatefulWidget {
 
 class _KullaniciAdiEkraniState extends State<KullaniciAdiEkrani> {
   TextEditingController _isimController = TextEditingController();
+  String bilgi = "";
 
   @override
   void initState() {
@@ -42,7 +43,6 @@ class _KullaniciAdiEkraniState extends State<KullaniciAdiEkrani> {
     final kullaniciAdi = prefs.getString('kullaniciAdi');
 
     if (kullaniciAdi != null && kullaniciAdi.isNotEmpty) {
-      // Kullanıcı adı varsa direkt AnaSayfa'ya geç
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -88,6 +88,14 @@ class _KullaniciAdiEkraniState extends State<KullaniciAdiEkrani> {
               },
               child: Text("Devam Et"),
             ),
+            if (bilgi.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Text(
+                  bilgi,
+                  style: TextStyle(color: Colors.red, fontSize: 16),
+                ),
+              ),
           ],
         ),
       ),
@@ -115,17 +123,14 @@ class _AnaSayfaState extends State<AnaSayfa> {
   }
 
   Future<void> _kullaniciKarshilama() async {
-    // Kullanıcının konumunu al
     Position konum = await Geolocator.getCurrentPosition();
     double lat = konum.latitude;
     double lon = konum.longitude;
 
-    // Hava durumu bilgilerini al
     var havaDurumu = await havaDurumuAl(lat, lon);
     String havaDurumuAciklama =
         "Bugün ${havaDurumu['main']['temp']}°C, ${havaDurumu['weather'][0]['description']}.";
 
-    // Sesli karşılama yap
     await tts.setLanguage("tr-TR");
     await tts.setSpeechRate(0.5);
     await tts.speak("Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama");
@@ -136,7 +141,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
   }
 
   Future<Map<String, dynamic>> havaDurumuAl(double lat, double lon) async {
-    final apiKey = 'd0e32760c0ffbd1e09879f6dd90c6998'; // OpenWeatherMap API anahtarınızı buraya koyun
+    final apiKey = 'd0e32760c0ffbd1e09879f6dd90c6998';
     final url =
         'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric&lang=tr';
 
