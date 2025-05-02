@@ -1,10 +1,9 @@
+// ... önceki import'lar aynı
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -77,7 +76,8 @@ class _KullaniciAdiEkraniState extends State<KullaniciAdiEkrani> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AnaSayfa(kullaniciAdi: kullaniciAdi),
+                      builder: (context) =>
+                          AnaSayfa(kullaniciAdi: kullaniciAdi),
                     ),
                   );
                 } else {
@@ -116,6 +116,8 @@ class _AnaSayfaState extends State<AnaSayfa> {
   final FlutterTts tts = FlutterTts();
   String bilgi = "Hoş geldiniz! Hava durumu alınıyor...";
 
+  bool havaDurumuGeldi = false;
+
   @override
   void initState() {
     super.initState();
@@ -137,6 +139,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
 
     setState(() {
       bilgi = "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama";
+      havaDurumuGeldi = true;
     });
   }
 
@@ -162,13 +165,21 @@ class _AnaSayfaState extends State<AnaSayfa> {
         centerTitle: true,
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 20),
           Text(
             bilgi,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 20, color: Colors.white),
           ),
+          SizedBox(height: 40),
+          if (havaDurumuGeldi)
+            ElevatedButton(
+              onPressed: () {
+                print("Deprem taraması başlatıldı");
+              },
+              child: Text("Deprem Tarama"),
+            ),
         ],
       ),
     );
