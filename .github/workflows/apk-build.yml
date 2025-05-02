@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - master
-
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -25,4 +27,8 @@ jobs:
       - name: Build APK
         run: flutter build apk --debug
 
-        
+      - name: Save APK as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
