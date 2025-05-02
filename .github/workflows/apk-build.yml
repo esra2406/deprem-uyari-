@@ -14,13 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
+          flutter-version: '3.5.0'  
 
       - name: Install dependencies
         run: flutter pub get
@@ -28,9 +27,7 @@ jobs:
       - name: Build APK
         run: flutter build apk --debug
 
-      - name: Zip APK
-        run: |
-          cd build/app/outputs/flutter-apk
-          zip app-debug.zip app-debug.apk
+      - name: Save APK as artifact (manual)
+        run: zip -r app-debug.zip build/app/outputs/flutter-apk/app-debug.apk
 
-          
+        
