@@ -1,4 +1,3 @@
-// ... önceki import'lar aynı
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -115,7 +114,6 @@ class AnaSayfa extends StatefulWidget {
 class _AnaSayfaState extends State<AnaSayfa> {
   final FlutterTts tts = FlutterTts();
   String bilgi = "Hoş geldiniz! Hava durumu alınıyor...";
-
   bool havaDurumuGeldi = false;
 
   @override
@@ -125,22 +123,32 @@ class _AnaSayfaState extends State<AnaSayfa> {
   }
 
   Future<void> _kullaniciKarshilama() async {
-    Position konum = await Geolocator.getCurrentPosition();
-    double lat = konum.latitude;
-    double lon = konum.longitude;
+    try {
+      final konum = await Geolocator.getCurrentPosition().timeout(Duration(seconds: 5));
+      final lat = konum.latitude;
+      final lon = konum.longitude;
 
-    var havaDurumu = await havaDurumuAl(lat, lon);
-    String havaDurumuAciklama =
-        "Bugün ${havaDurumu['main']['temp']}°C, ${havaDurumu['weather'][0]['description']}.";
+      var havaDurumu = await havaDurumuAl(lat, lon).timeout(Duration(seconds: 5));
+      String havaDurumuAciklama =
+          "Bugün ${havaDurumu['main']['temp']}°C, ${havaDurumu['weather'][0]['description']}.";
 
-    await tts.setLanguage("tr-TR");
-    await tts.setSpeechRate(0.5);
-    await tts.speak("Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama");
+      await tts.setLanguage("tr-TR");
+      await tts.setSpeechRate(0.5);
+      await tts.speak("Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama");
 
-    setState(() {
-      bilgi = "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama";
-      havaDurumuGeldi = true;
-    });
+      setState(() {
+        bilgi = "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama";
+        havaDurumuGeldi = true;
+      });
+    } catch (e) {
+      await tts.setLanguage("tr-TR");
+      await tts.setSpeechRate(0.5);
+      await tts.speak("Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.");
+      setState(() {
+        bilgi = "Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.";
+        havaDurumuGeldi = true;
+      });
+    }
   }
 
   Future<Map<String, dynamic>> havaDurumuAl(double lat, double lon) async {
