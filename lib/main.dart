@@ -1,0 +1,171 @@
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:math';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  runApp(DepremUyariApp());
+}
+
+class DepremUyariApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Deprem Uyarı Sistemi',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(),
+      home: KullaniciAdiEkrani(),
+    );
+  }
+}
+
+class KullaniciAdiEkrani extends StatefulWidget {
+  @override
+  _KullaniciAdiEkraniState createState() => _KullaniciAdiEkraniState();
+}
+
+class _KullaniciAdiEkraniState extends State<KullaniciAdiEkrani> {
+  TextEditingController _isimController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _kontrolEtKullaniciAdi();
+  }
+
+  Future<void> _kontrolEtKullaniciAdi() async {
+    final prefs = await SharedPreferences.getInstance();
+    final kullaniciAdi = prefs.getString('kullaniciAdi');
+
+    if (kullaniciAdi != null && kullaniciAdi.isNotEmpty) {
+      // Kullanıcı adı varsa direkt AnaSayfa'ya geç
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AnaSayfa(kullaniciAdi: kullaniciAdi),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Kullanıcı Adı Girişi"),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _isimController,
+              decoration: InputDecoration(labelText: "Adınızı girin"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String kullaniciAdi = _isimController.text;
+                if (kullaniciAdi.isNotEmpty) {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setString('kullaniciAdi', kullaniciAdi);
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AnaSayfa(kullaniciAdi: kullaniciAdi),
+                    ),
+                  );
+                } else {
+                  setState(() {
+                    bilgi = "Lütfen bir isim girin.";
+                  });
+                }
+              },
+              child: Text("Devam Et"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AnaSayfa extends StatefulWidget {
+  final String kullaniciAdi;
+
+  AnaSayfa({required this.kullaniciAdi});
+
+  @override
+  _AnaSayfaState createState() => _AnaSayfaState();
+}
+
+class _AnaSayfaState extends State<AnaSayfa> {
+  final FlutterTts tts = FlutterTts();
+  String bilgi = "Hoş geldiniz! Hava durumu alınıyor...";
+
+  @override
+  void initState() {
+    super.initState();
+    _kullaniciKarshilama();
+  }
+
+  Future<void> _kullaniciKarshilama() async {
+    // Kullanıcının konumunu al
+    Position konum = await Geolocator.getCurrentPosition();
+    double lat = konum.latitude;
+    double lon = konum.longitude;
+
+    // Hava durumu bilgilerini al
+    var havaDurumu = await havaDurumuAl(lat, lon);
+    String havaDurumuAciklama =
+        "Bugün ${havaDurumu['main']['temp']}°C, ${havaDurumu['weather'][0]['description']}.";
+
+    // Sesli karşılama yap
+    await tts.setLanguage("tr-TR");
+    await tts.setSpeechRate(0.5);
+    await tts.speak("Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama");
+
+    setState(() {
+      bilgi = "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama";
+    });
+  }
+
+  Future<Map<String, dynamic>> havaDurumuAl(double lat, double lon) async {
+    final apiKey = 'd0e32760c0ffbd1e09879f6dd90c6998'; // OpenWeatherMap API anahtarınızı buraya koyun
+    final url =
+        'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric&lang=tr';
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Hava durumu verisi alınamadı.');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Ana Sayfa"),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          SizedBox(height: 20),
+          Text(
+            bilgi,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 20, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+}

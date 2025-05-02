@@ -1,0 +1,2 @@
+C:/Users/esrac/deprem_yeni/android/app/.cxx/Debug/5t1x3e91/x86/CMakeFiles/edit_cache.dir
+C:/Users/esrac/deprem_yeni/android/app/.cxx/Debug/5t1x3e91/x86/CMakeFiles/rebuild_cache.dir
