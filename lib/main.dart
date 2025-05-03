@@ -159,7 +159,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
   }
 
   Future<Map<String, dynamic>> havaDurumuAl(double lat, double lon) async {
-    final apiKey = 'd0e32760c0ffbd1e09879f6dd90c6998';
+    final apiKey = '9f08501f47395309329a5d148573ef8e';
     final url =
         'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric&lang=tr';
 
