@@ -124,28 +124,35 @@ class _AnaSayfaState extends State<AnaSayfa> {
 
   Future<void> _kullaniciKarshilama() async {
     try {
-      final konum = await Geolocator.getCurrentPosition().timeout(Duration(seconds: 5));
+      final konum = await Geolocator.getCurrentPosition()
+          .timeout(Duration(seconds: 7));
       final lat = konum.latitude;
       final lon = konum.longitude;
 
-      var havaDurumu = await havaDurumuAl(lat, lon).timeout(Duration(seconds: 5));
+      var havaDurumu =
+          await havaDurumuAl(lat, lon).timeout(Duration(seconds: 7));
       String havaDurumuAciklama =
           "Bugün ${havaDurumu['main']['temp']}°C, ${havaDurumu['weather'][0]['description']}.";
 
       await tts.setLanguage("tr-TR");
       await tts.setSpeechRate(0.5);
-      await tts.speak("Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama");
+      await tts.speak(
+          "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama");
 
       setState(() {
-        bilgi = "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama";
+        bilgi =
+            "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama";
         havaDurumuGeldi = true;
       });
     } catch (e) {
       await tts.setLanguage("tr-TR");
       await tts.setSpeechRate(0.5);
-      await tts.speak("Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.");
+      await tts.speak(
+          "Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.");
+
       setState(() {
-        bilgi = "Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.";
+        bilgi =
+            "Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.";
         havaDurumuGeldi = true;
       });
     }
