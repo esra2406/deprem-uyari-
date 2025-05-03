@@ -124,35 +124,44 @@ class _AnaSayfaState extends State<AnaSayfa> {
 
   Future<void> _kullaniciKarshilama() async {
     try {
-      final konum = await Geolocator.getCurrentPosition()
-          .timeout(Duration(seconds: 7));
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) throw Exception('Konum servisleri kapalı.');
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw Exception('Konum izni reddedildi.');
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        throw Exception('Konum izni kalıcı olarak reddedildi.');
+      }
+
+      final konum = await Geolocator.getCurrentPosition().timeout(Duration(seconds: 7));
       final lat = konum.latitude;
       final lon = konum.longitude;
 
-      var havaDurumu =
-          await havaDurumuAl(lat, lon).timeout(Duration(seconds: 7));
+      var havaDurumu = await havaDurumuAl(lat, lon).timeout(Duration(seconds: 7));
       String havaDurumuAciklama =
           "Bugün ${havaDurumu['main']['temp']}°C, ${havaDurumu['weather'][0]['description']}.";
 
       await tts.setLanguage("tr-TR");
       await tts.setSpeechRate(0.5);
-      await tts.speak(
-          "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama");
+      await tts.awaitSpeakCompletion(true);
+      await tts.speak("Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama");
 
       setState(() {
-        bilgi =
-            "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama";
+        bilgi = "Hoş geldiniz ${widget.kullaniciAdi}. $havaDurumuAciklama";
         havaDurumuGeldi = true;
       });
     } catch (e) {
+      print("HATA: $e");
       await tts.setLanguage("tr-TR");
       await tts.setSpeechRate(0.5);
-      await tts.speak(
-          "Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.");
-
+      await tts.speak("Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.");
       setState(() {
-        bilgi =
-            "Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.";
+        bilgi = "Hoş geldiniz ${widget.kullaniciAdi}. Hava durumu alınamadı.";
         havaDurumuGeldi = true;
       });
     }
@@ -160,8 +169,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
 
   Future<Map<String, dynamic>> havaDurumuAl(double lat, double lon) async {
     final apiKey = '9f08501f47395309329a5d148573efe8';
-    final url =
-        'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric&lang=tr';
+    final url = 'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric&lang=tr';
 
     final response = await http.get(Uri.parse(url));
 
