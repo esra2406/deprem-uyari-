@@ -33,5 +33,5 @@ dependency_overrides:
     git:
       url: https://github.com/esra2406/flutter_blue.git
       ref: master
-      path: android
+      
 
