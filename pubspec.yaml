@@ -14,7 +14,7 @@ dependencies:
   flutter_tts: ^4.2.2  
   intl: ^0.20.2  
   shared_preferences: ^2.2.2
-  
+
 
 
 
@@ -33,4 +33,5 @@ dependency_overrides:
     git:
       url: https://github.com/esra2406/flutter_blue.git
       ref: master
+      path: android
 
