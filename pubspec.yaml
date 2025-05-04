@@ -28,4 +28,9 @@ flutter:
     - assets/logo.png
     - assets/earthquake_loading.json
 
+dependency_overrides:
+  flutter_blue:
+    git:
+      url: https://github.com/esra2406/flutter_blue.git
+      ref: master
 

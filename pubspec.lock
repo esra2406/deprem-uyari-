@@ -97,10 +97,11 @@ packages:
   flutter_blue:
     dependency: "direct main"
     description:
-      name: flutter_blue
-      sha256: f7f76b9b80455b0375693ec96c276fadb01e94d8441fa1740a64980cd1aeda5c
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: ca1eb4eacc00aed1fdbebaa31ffda9162b0cc1a2
+      url: "https://github.com/esra2406/flutter_blue.git"
+    source: git
     version: "0.8.0"
   flutter_test:
     dependency: "direct dev"
