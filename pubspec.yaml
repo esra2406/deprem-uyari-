@@ -14,9 +14,8 @@ dependencies:
   flutter_tts: ^4.2.2  
   intl: ^0.20.2  
   shared_preferences: ^2.2.2
-
-
-
+  flutter_blue:
+    path: flutter_blue
 
 dev_dependencies:
   flutter_test:
@@ -28,10 +27,4 @@ flutter:
     - assets/logo.png
     - assets/earthquake_loading.json
 
-dependency_overrides:
-  flutter_blue:
-    git:
-      url: https://github.com/esra2406/flutter_blue.git
-      ref: master
-      
-
+    

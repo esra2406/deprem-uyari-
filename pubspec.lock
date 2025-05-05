@@ -95,13 +95,11 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_blue:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: ca1eb4eacc00aed1fdbebaa31ffda9162b0cc1a2
-      url: "https://github.com/esra2406/flutter_blue.git"
-    source: git
+      path: flutter_blue
+      relative: true
+    source: path
     version: "0.8.0"
   flutter_test:
     dependency: "direct dev"
