@@ -8,12 +8,12 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:7.4.2' // Flutter 3.22 ile uyumlu versiyon
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.15'
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
         google()
         jcenter()
@@ -22,10 +22,9 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.google.protobuf'
-namespace 'com.pauldemarco.flutter_blue'
-
 
 android {
+    namespace 'com.pauldemarco.flutter_blue' // Bu satır buraya taşındı
     compileSdkVersion 33
 
     defaultConfig {
@@ -40,6 +39,10 @@ android {
             }
         }
     }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 }
 
 protobuf {
@@ -50,7 +53,9 @@ protobuf {
     generateProtoTasks {
         all().each { task ->
             task.builtins {
-                java {}
+                java {
+                    option "lite"
+                }
             }
         }
     }
