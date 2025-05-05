@@ -22,6 +22,8 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.google.protobuf'
+namespace 'com.pauldemarco.flutter_blue'
+
 
 android {
     compileSdkVersion 33
