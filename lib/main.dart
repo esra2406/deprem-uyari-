@@ -3,7 +3,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
-import 'bluetooth_cihazlar_sayfasi.dart';
 
 void main() {
   runApp(DepremUyariApp());
@@ -187,7 +186,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
   void bluetoothMesaj() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => BluetoothCihazlarSayfasi()),
+      MaterialPageRoute(builder: (context) => Placeholder()), // geçici olarak koyduk
     );
   }
 
